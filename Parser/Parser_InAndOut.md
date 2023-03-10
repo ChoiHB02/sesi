@@ -136,3 +136,21 @@ namespace Excel_read
         }
     }
 }
+
+
+
+## 텍스트안에 있는 데이터를 엑셀로 옮기는 코드
+
+
+
+원형 범위 안의 특정 타겟을 특정해 총알을 쏘는 코드
+* 인스펙터 설정을 해주세요
+- width 원의 두께
+- Calc View Radius 원의 반지름
+- line count 원의 부드러움
+<img src="image/fov_1.PNG" width="100%"><br>
+* 이 코드를 넣은 오브젝트에 라인렌더러 추가 필요
+<img src="image/fov_2.PNG" width="100%"><br>
+* 라인렌더러의 마테리얼을 지정해주세요
+* 라인렌더러의 use world space 옵션 체크를 해제해주세요
+```C#
