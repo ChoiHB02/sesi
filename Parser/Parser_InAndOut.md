@@ -29,16 +29,10 @@
 
 ## 엑셀 안의 데이터를 텍스트화 시키는 코드
 
-원형 범위 안의 특정 타겟을 특정해 총알을 쏘는 코드
-* 인스펙터 설정을 해주세요
-- width 원의 두께
-- Calc View Radius 원의 반지름
-- line count 원의 부드러움
-<img src="image/fov_1.PNG" width="100%"><br>
-* 이 코드를 넣은 오브젝트에 라인렌더러 추가 필요
-<img src="image/fov_2.PNG" width="100%"><br>
-* 라인렌더러의 마테리얼을 지정해주세요
-* 라인렌더러의 use world space 옵션 체크를 해제해주세요
+엑셀의 데이터들을 텍스트로 변환시키는 코드
+분리된 셀의 정의를 ';'로 지정하여 가로줄의 텍스트를 뽑아낸다.  
+* 먼저 테스트로 뽑아낼 파일의 위치를 지정해주세요.
+
 ```C#
 using System;
 using System.Collections.Generic;
@@ -64,10 +58,11 @@ namespace Excel_read
             string str;
             int rCnt;
             int cCnt;
-            int rw = 0;
-            int cl = 0;
-
-            Excel.Range range;
+            int rw = 0; //행 개수
+            int cl = 0; //열 개수
+            // 엑셀 범위의 대한 필요한 변수들을 선언
+            
+            Excel.Range range; //엑셀 범위 선언
 
             Excel.Application xlApp =new Microsoft.Office.Interop.Excel.Application(); //Excel.Application 객체는 Excel 프로그램을 제어할 수 있는
                                                                                        //기능을 제공하는 COM(Component Object Model) 객체
@@ -105,29 +100,30 @@ namespace Excel_read
             //근데 수정할 거 없으면 그냥 파일 경로만 불러서 호출 가능함 (파일 경로만 필수)
 
 
-            Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+            Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1); //열린 Workbook 객체에서 첫 번째 Worksheet 객체를 가져옵니다.
 
             range = xlWorkSheet.UsedRange;
-            rw = range.Rows.Count;
-            cl = range.Columns.Count;
+            rw = range.Rows.Count; // 행 개수 대한 범위 선언 
+            cl = range.Columns.Count; // 열 개수 대한 범위 선언
 
             for (rCnt = 1; rCnt <= rw; rCnt++)
             {
                 for (cCnt = 1; cCnt <= cl; cCnt++)
                 {
-                    str = (string)(range.Cells[rCnt, cCnt] as Excel.Range).Value2;
-                    Console.Write(str);
+                    str = (string)(range.Cells[rCnt, cCnt] as Excel.Range).Value2; //현재 셀 값을 가져옵니다.
+                    Console.Write(str); // 데이터를 출력
                     if (((string)(range.Cells[rCnt, cCnt+1] as Excel.Range).Value2 == null) && ((string)(range.Cells[rCnt, cCnt+2] as Excel.Range).Value2 == null)) // 한, 두 칸 앞에 자료가 없을 경우 ;를 붙이지 않고 넘어감
                     {
                         continue;
                     }
                     Console.Write(";"); // 셸에 들어있는 데이터의 출력이 끝나면 세미콜론(;) 출력 
                 }
-                Console.WriteLine();
+                Console.WriteLine(); // 줄바꿈
             }
 
-            xlWorkBook.Close(true, null, null);
+            xlWorkBook.Close(true, null, null); 
             xlApp.Quit();
+            //Workbook 객체와 Excel 어플리케이션 객체를 종료합니다.
 
             Marshal.ReleaseComObject(xlWorkSheet);
             Marshal.ReleaseComObject(xlWorkBook);
@@ -156,3 +152,55 @@ namespace Excel_read
 <img src="image/fov_2.PNG" width="100%"><br>
 * 라인렌더러의 마테리얼을 지정해주세요
 * 라인렌더러의 use world space 옵션 체크를 해제해주세요
+
+
+```C#
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using System.Runtime.InteropServices;
+using System.Data.OleDb;
+using System.IO;
+using Excel = Microsoft.Office.Interop.Excel;
+using Microsoft.Office.Interop.Excel;
+using System.Drawing;
+
+
+namespace Excel_makeByText
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            
+            Application excel = new Application();
+            Workbook workbook = excel.Workbooks.Add();
+            Worksheet worksheet = workbook.Sheets[1];
+            string[] lines = File.ReadAllLines(@"C:\\Users\\SESI\\Downloads\\language.howtoplay.txt");
+
+            int row = 1;
+            foreach (string line in lines)
+            {
+                string[] values = line.Split(';');
+                int column = 1;
+                foreach (string value in values)
+                {
+                    worksheet.Cells[row, column] = value;
+                    worksheet.Columns[column].AutoFit(); // 글자의 길이에 따라 셀이 늘어나는 코드
+                    worksheet.Cells[row, column].WrapText = true; //셸이 줄바꿈이 되는 코드
+                    column++;
+                }
+                row++;
+            }
+
+            string savePath = @"C:\Users\SESI\Downloads\Excel_practice\output.xlsx";
+            workbook.SaveAs(savePath);
+            workbook.Close();
+            excel.Quit();
+        }
+    }
+}
+```
