@@ -32,6 +32,7 @@
 엑셀의 데이터들을 텍스트로 변환시키는 코드
 분리된 셀의 정의를 ';'로 지정하여 가로줄의 텍스트를 뽑아낸다.  
 * 먼저 테스트로 뽑아낼 파일의 위치를 지정해주세요.
+* xlApp.Workbooks.Open 함수 옆에 위치를 지정하는 곳에 넣으면 됩니다.
 
 ```C#
 using System;
@@ -140,18 +141,10 @@ namespace Excel_read
 
 ## 텍스트안에 있는 데이터를 엑셀로 옮기는 코드
 
-
-
-원형 범위 안의 특정 타겟을 특정해 총알을 쏘는 코드
-* 인스펙터 설정을 해주세요
-- width 원의 두께
-- Calc View Radius 원의 반지름
-- line count 원의 부드러움
-<img src="image/fov_1.PNG" width="100%"><br>
-* 이 코드를 넣은 오브젝트에 라인렌더러 추가 필요
-<img src="image/fov_2.PNG" width="100%"><br>
-* 라인렌더러의 마테리얼을 지정해주세요
-* 라인렌더러의 use world space 옵션 체크를 해제해주세요
+텍스트의 데이터들을 엑셀 로 변환시키는 코드
+텍스트 속의 셀의 단위를 ';'지정하여 나누어줍니다.
+* 먼저 테스트로 뽑아낼 파일의 위치를 지정해주세요.
+* File.ReadAllLines 함수 옆에 위치를 지정하는 곳에 넣으면 됩니다.
 
 
 ```C#
@@ -176,19 +169,19 @@ namespace Excel_makeByText
         static void Main(string[] args)
         {
             
-            Application excel = new Application();
-            Workbook workbook = excel.Workbooks.Add();
-            Worksheet worksheet = workbook.Sheets[1];
-            string[] lines = File.ReadAllLines(@"C:\\Users\\SESI\\Downloads\\language.howtoplay.txt");
+            Application excel = new Application();// 어플리케이션 선언 
+            Workbook workbook = excel.Workbooks.Add(); // 워크 북 더하기
+            Worksheet worksheet = workbook.Sheets[1]; // 데이터를 넣을 워크 시트 선언 
+            string[] lines = File.ReadAllLines(@"C:\\Users\\SESI\\Downloads\\language.howtoplay.txt"); // 텍스트 파일을 읽을 경로 설정 
 
             int row = 1;
             foreach (string line in lines)
             {
-                string[] values = line.Split(';');
+                string[] values = line.Split(';'); //텍스트 안의 글자들 속에 ';'마다 셀로 나누어줍니다.
                 int column = 1;
                 foreach (string value in values)
                 {
-                    worksheet.Cells[row, column] = value;
+                    worksheet.Cells[row, column] = value; // 순서대로 글자를 셀에 입력해줍니다.
                     worksheet.Columns[column].AutoFit(); // 글자의 길이에 따라 셀이 늘어나는 코드
                     worksheet.Cells[row, column].WrapText = true; //셸이 줄바꿈이 되는 코드
                     column++;
@@ -196,10 +189,10 @@ namespace Excel_makeByText
                 row++;
             }
 
-            string savePath = @"C:\Users\SESI\Downloads\Excel_practice\output.xlsx";
-            workbook.SaveAs(savePath);
-            workbook.Close();
-            excel.Quit();
+            string savePath = @"C:\Users\SESI\Downloads\Excel_practice\output.xlsx"; //엑셀파일을 저장할 경로를 설정
+            workbook.SaveAs(savePath); // 엑셀 파일저장
+            workbook.Close(); // 워크 북 종료
+            excel.Quit(); // 엑셀 나가기
         }
     }
 }
