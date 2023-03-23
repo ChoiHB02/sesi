@@ -48,6 +48,25 @@ using Microsoft.Office.Interop.Excel;
 - 두 번째 줄은 C# 코드에서 Excel 작업을 자동화하는 데 사용할 수 있는 모든 클래스, 인터페이스 및 열거형을 포함하는 전체 Excel 개체 모델을 가져옵니다.
 
 
+System.Text: 텍스트를 인코딩, 디코딩 및 조작하기 위한 형식과 클래스를 제공합니다.
+System.Threading.Tasks: TAP(작업 기반 비동기 패턴)를 사용하여 비동기 코드를 작성하기 위한 형식과 클래스를 제공합니다.
+OfficeOpenXml: C# 코드를 사용하여 Excel 스프레드시트를 만들고 조작하기 위한 라이브러리를 제공합니다. 이 네임스페이스를 사용하려면 EPPlus 패키지를 설치해야 합니다.
+System.Runtime.InteropServices: C# 코드에서 DLL 함수를 호출하는 것과 같이 비관리 코드와 상호 작용하기 위한 형식 및 클래스를 제공합니다.
+System.Data.OleDb: OleDb 데이터 공급자를 사용하여 데이터 소스로 작업하기 위한 형식 및 클래스를 제공합니다.
+System.Drawing: 그래픽과 이미지 작업을 위한 형식과 클래스를 제공합니다.
+System.Data: 데이터베이스, 파일 및 웹 서비스와 같은 다양한 소스의 데이터로 작업하기 위한 형식과 클래스를 제공합니다.
+System.Resources: 문자열, 이미지 및 아이콘과 같은 리소스 작업을 위한 형식과 클래스를 제공합니다.
+Microsoft.Office.Core: 명령 모음 및 사용자 지정 작업창과 같은 Microsoft Office 응용 프로그램의 핵심 기능을 제공합니다.
+System.Data.Common: 공용 ADO.NET 인터페이스를 구현하는 데이터 공급자와 함께 작업하기 위한 형식과 클래스를 제공합니다.
+OfficeOpenXml.ExcelErrorValue: Excel 수식에서 사용할 수 있는 미리 정의된 오류 값 집합을 제공합니다.
+System.Security.Cryptography: 암호화 알고리즘 및 프로토콜 작업을 위한 형식과 클래스를 제공합니다.
+System.Runtime.CompilerServices: 사용자 지정 특성 및 확장 메서드와 같은 컴파일러 서비스를 구현하기 위한 형식과 클래스를 제공합니다.
+System.Security.AccessControl: 보안 권한 및 ACL(액세스 제어 목록) 작업을 위한 형식과 클래스를 제공합니다.
+System.Security.Principal: 사용자 및 그룹과 같은 보안 주체로 작업하기 위한 형식 및 클래스를 제공합니다.
+
+
+
+
 
 ## 엑셀 안의 데이터를 텍스트화 시키는 코드
 
