@@ -27,8 +27,12 @@
 
 ---
 
+* 사용 목적
+  1. ASSET 확장자 파일에서 필요한 값들을 뽑아서 엑셀에 넣어서 정렬시키는 것.
 
-
+* 구성 요소
+    1.  데이터를 뽑을 에셋 파일이 담긴 폴더
+    2.	데이터를 엑셀로 뽑아내서 저장할 폴더 
 
 ## 이 코드를 하기 전 Visual Studio 2022에서는 프로젝트->참조 추가->COM->검색에서 'Excel' 타이핑 해주면 Microft Excel 15.0 Object Library가 나오는데 왼쪽 상자를 클릭하여 추가하고 확인을 눌러줘야한다.
 그럼 이제 두 개의 네임스페이스를 가져올 수 있는데 
@@ -36,9 +40,8 @@
 using Excel = Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Excel;
 ```
-이 두 개를 가져올 수 있습니다.
-
 이 두 개는 C# 코드 내에서 Excel 통합 문서, 워크시트, 셀 및 기타 관련 개체에 액세스하고 조작할 수 있습니다.
+먼저 엑셀을 만들기 위해선 이 두 개의 네임스페이스가 필요합니다. 
 
 - 첫 번째 줄은 네임스페이스에 대한 별칭 "Excel"을 만듭니다. 
 이렇게 하면 코드의 다른 네임스페이스 또는 클래스와의 이름 충돌을 방지할 수 있습니다.
@@ -60,140 +63,509 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeOpenXml;  //EPPlus를 설치
 
 using System.Runtime.InteropServices;
 using System.Data.OleDb;
-using System.IO;
 using Excel = Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Excel;
 using System.Drawing;
+using System.Data;
+using System.Resources;
+using Microsoft.Office.Core;
+using System.Data.Common;
+using static OfficeOpenXml.ExcelErrorValue;
+using System.Security.Cryptography;
+using System.Runtime.CompilerServices;
+using System.Security.AccessControl;
+using System.Security.Principal;
 
-namespace Excel_MakeText
+
+
+namespace Excel_parseer
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            string excelFilePath = @"C:\Users\SESI\Downloads\language.howtoplay.xlsx"; //텍스트로 만들어낼 엑셀 파일의 경로 지정
-            string textFilePath = @"C:\Users\SESI\Downloads\Excel_practice\ExcelText1.txt"; //생성할 텍스트 파일의 이름과 경로 설정 
+            Console.OutputEncoding = Encoding.GetEncoding("Shift-JIS");
 
-            Excel.Application excel = new Excel.Application();
-            Excel.Workbook workbook = null;
+            string directoryPath = @"C:\Users\SESI\Downloads\homework\source\Bundle\Resources\Story";
 
-            try
+            // Get all file paths in the directory with the .asset extension
+            //string[] excelFilePaths = Directory.GetFiles(directoryPath, "*.asset", SearchOption.AllDirectories);
+            string[] excelFilePaths = Directory.GetFiles(directoryPath, "*.asset", SearchOption.AllDirectories)
+             .Where(filePath => Path.GetFileName(filePath).Length <= 30)
+             .ToArray();
+
+
+            foreach (string excelFilePath in excelFilePaths)
             {
-                workbook = excel.Workbooks.Open(excelFilePath);
+                Application excel = new Application();
+                Workbook workbook = excel.Workbooks.Add();
+                Worksheet worksheet = workbook.Sheets[1]; //storytimeline
+                Worksheet worksheet2 = workbook.Sheets[1]; //title_color
 
-                // 첫 번째 워크시트 가져오기
-                Excel.Worksheet worksheet = workbook.Worksheets[1];
+                Console.WriteLine(excelFilePath);
+                // asset 파일 경로
+                //string assetFilePath = "C:\\Users\\SESI\\Downloads\\homework\\source\\Bundle\\Resources\\Story\\Data\\04\\1001\\storytimeline_041001001.asset";
+                
+                string[] path = excelFilePath.Split('\\'); // 파일 경로를 구분 
+                string[] fileName = path[12].Split('.'); // 파일 네임에서 확장자를 뺌
+                                                         // 텍스트 파일 경로
+                                                         // string textFilePath = Path.ChangeExtension(assetFilePath, ".txt");
+                                                         // asset 파일 내용을 텍스트 파일로 저장
+                                                         //File.WriteAllText(textFilePath, File.ReadAllText(assetFilePath));
 
-                // 텍스트 파일 생성
-                using (StreamWriter sw = new StreamWriter(textFilePath))
+                Directory.CreateDirectory(path[0] + "\\" + path[1] + "\\" + path[2] + "\\" + path[3] + "\\" +
+                    path[4] + "\\" + "testFinal\\" + path[6] + "\\" + path[7] + "\\" + path[8] + "\\" + path[9] + "\\"
+                    + path[10] + "\\" + path[11]); //폴더 생성
+
+                string[] lines = File.ReadAllLines(excelFilePath); //라인으로 텍스트의 글들을 싹 읽어 온거
+
+
+                // 추출할 변수
+                string variable_Text = " Text: \""; //storytimeline 시트에 text 칸에 넣는다.
+                string variable_Name = "  Name:"; // storytimeline 시트에 name 칸에 넣는다.   
+                string variable_Choice = "    NextBlock:"; // storytimeline 시트에 Choicelist 일 경우 name에 선택지라는 글을 넣고 text에 유니코드를 넣는다.
+                string variable_Title = "Title: \""; //title_color 시트에서 text 칸에 넣는다.
+                string NextBlock = "  NextBlock:";
+                string DifferenceType = "  DifferenceType:";
+                string DifferenceType2 = "    DifferenceType:";
+                string DifferenceType3 = "  - Text: \""; //초이스 항목 중에 텍스트를 이용한 조건            //  DifferenceType: 1
+                string Reload = "---";
+                //DifferenceFlag: 2 둘의 옵션을 가지고 있는 오브젝트는   NextBlock:3 -> ChoiceList[] 1.NextBlock:4 2.NextBlock:4 
+                //단 주인 오브젝트만 해당됨
+
+                worksheet.Name = fileName[0];
+
+                // 파일 네임에서 확장자를 뺀 변수를 시트 이름으로 지정
+                worksheet = (Excel.Worksheet)workbook.Worksheets.get_Item(1);
+
+                worksheet.Cells[1, 1] = "path";
+                worksheet.Cells[1, 2] = "filename";
+                worksheet.Cells[1, 3] = "name";
+                worksheet.Cells[1, 4] = "name_kr";
+                worksheet.Cells[1, 5] = "text";
+                worksheet.Cells[1, 6] = "text_kr";
+                worksheet2 = (Excel.Worksheet)workbook.Worksheets.Add(Type.Missing, worksheet, Type.Missing, Type.Missing);
+                /// 시트2에 내용 집어넣기
+                if (workbook.Worksheets.Count >= 2)
                 {
-                    // 각 행을 탐색하여 셀 값을 읽어 텍스트 파일에 쓰기
-                    for (int row = 1; row <= worksheet.UsedRange.Rows.Count; row++)
-                    {
-                        for (int col = 1; col <= worksheet.UsedRange.Columns.Count; col++)
-                        {
-                            // 셀 값 읽어오기
-                            Excel.Range range = worksheet.Cells[row, col];
-                            string cellValue = (range.Value2 == null) ? "" : range.Value2.ToString();
 
-                            // 텍스트 파일에 쓰기
-                            sw.Write(cellValue);
+                    worksheet2.Name = "title_color";
 
-                            // 마지막 셀이 아니면 구분자(세미콜론) 쓰기
-                            if (col != worksheet.UsedRange.Columns.Count)
-                            {
-                                sw.Write(";");
-                            }
-                        }
-                        sw.WriteLine(); // 다음 행으로 이동하여 쓰기
-                    }
+                    worksheet2.Cells[1, 1] = "path";
+                    worksheet2.Cells[1, 2] = "filename";
+                    worksheet2.Cells[1, 3] = "text";
+                    worksheet2.Cells[1, 4] = "text_kr";
+                }
+                else
+                {
+                    Console.WriteLine("해당 워크북에 두 번째 워크시트가 존재하지 않습니다.");
                 }
 
-                Console.WriteLine("텍스트 파일이 생성되었습니다.");
+                int row = 2;
+                int count = 0;
+
+                foreach (string line in lines)
+                {
+                    if (line.Contains(NextBlock)) //nextblock 에서 뽑아낸 정수로 문장정렬
+                    {
+                        count++;
+
+                    }
+                }
+                int[] nextBlocks = new int[count];
+                string[] values3_Name = new string[count];
+                string[] values3_Text = new string[count];
+
+                bool ChoiceOne = false;
+                bool Gates = false;
+                bool sibaljum = false;
+                bool sibaljum_Row = false;
+                bool sibaljum2 = false;
+                bool sibaljum3_1 = false;
+                bool sibaljum3_2 = false;
+                bool One_sibaljum = false;
+                string[] values2_Name = null;
+                string[] values2_Text = null;
+
+                int Stepup = 0;
+                int CountRow = 0;
+                int different = 0;
+                int variableblock = 0;
+                int ChoiceNumber = 0;
+                int row1 = 0; int row2 = 0;
+                for (int i = 2; i <= count; i++) //i를 이용해서 순서대로 출력하게 만든다.
+                {
+                    values2_Name = null;
+                    values2_Text = null;
+
+                    foreach (string line in lines)  // nextBlock: i 를 찾는다.
+                    {
+                        if (line.Contains(variable_Name)) // Check if the line contains "Name: "
+                        {
+
+                            string[] values = line.Split(':');
+                            values[1] = null;
+                            values = line.Split(':');
+                            //Name:
+                            if (values[1] == " ") //"Name:" 이란 변수는 있는데 값이 없을 경우 
+                            {
+                                // values2_Name = line.Split(':');
+                                string decoded = System.Text.RegularExpressions.Regex.Unescape(values[1]); //이스케이프 시퀀스를 디코딩할 수 있습니다. 
+                                values2_Name = decoded.Split('\"');
+                                //RowMinus1 =true;
+                            }
+                            if (!string.IsNullOrEmpty(values[1]))
+                            {
+
+                                string decoded = System.Text.RegularExpressions.Regex.Unescape(values[1]); //이스케이프 시퀀스를 디코딩할 수 있습니다. 
+                                values2_Name = decoded.Split('\"');
+                                //worksheet.Cells[row, 3] = values2_Name[1].Trim();
+                                //RowMinus2 = true;
+                            }
+
+                        }
+                        else if (line.Contains(variable_Choice)) //choice 쪽인데 Name을 출력해야 하는 경우 variable_Choice = "    NextBlock:"
+                        {
+                            string[] values = line.Split(':');
+                            if (int.Parse(values[1]) == variableblock + 1)
+                            {
+                                sibaljum = true; //이걸 출력을 제한하는 용도로 씀
+                                One_sibaljum = true;//이걸 출력을 제한하는 용도로 씀 무조건 처음만 +1을 하도록 함
+                                                    //Console.WriteLine(variableblock);
+                                sibaljum_Row = true;
+
+                            }
+
+
+                            //worksheet.Cells[row, 3] = "선택지"; //ChoiceList를 Name 쪽에 "선택지"로 저장
+                            if (int.Parse(values[1]) == i)
+                            {
+                                ChoiceOne = true;
+                            }
+
+                        }
+                        if (line.Contains(variable_Text)) // Check if the line contains "Text: "
+                        {
+
+                            string[] values = line.Split(':');
+                            string japaneseString = values[1].Trim(); // Remove leading/trailing space
+                            string decoded = System.Text.RegularExpressions.Regex.Unescape(japaneseString); //이스케이프 시퀀스를 디코딩할 수 있습니다. 
+                            values2_Text = decoded.Split('\"');
+
+
+                            //path[6~11] 
+                            worksheet.Cells[row, 1] = path[6].Trim() + "\\" + path[7].Trim() + "\\" + path[8].Trim() + "\\" + path[9].Trim() + "\\" +
+                                path[10].Trim() + "\\" + path[11].Trim(); //Path 출력
+
+                            //path[12] 
+                            worksheet.Cells[row, 2] = fileName[0].Trim(); //Filename 출력
+
+
+                            Gates = true;
+                        }
+                        if (line.Contains(DifferenceType))
+                        {
+                            string[] values = line.Split(':');
+                            if (int.Parse(values[1]) == 1) //DifferenceType이 1이라면 변수 1 정의   DifferenceType:
+                            {
+                                different = 1;
+                            }
+                            else // DifferenceType이 1이 아니라면 거부
+                            {
+                                different = 0;
+                            }
+                        }
+                        if (line.Contains(DifferenceType2)) //거름망2 "    DifferenceType:";
+                        {
+                            string[] values = line.Split(':');
+
+                            different = 0;
+
+                        }
+                        if (line.Contains(DifferenceType3)) // 초이스 항목 중에 텍스트를 이용한 조건 "  - Text: \""
+                        {
+                            ChoiceNumber++;
+                        }
+                        if (line.Contains(NextBlock))//NextBlock: "  NextBlock:"  
+                        { //NextBlock을 숫자순으로 차례대로 검사하여 엑셀에 저장
+
+                            string[] values = line.Split(':');
+                            if (Stepup - 1 == int.Parse(values[1]))
+                            {
+                                CountRow = 8;
+                            }
+                            if (Gates == true) //Text 변수에서 문장을 가져왔을 때
+                            {
+                                if (different == 1) // 유일한 문제 여기서 different는 처음에만 작용하고 후에 초이스에 관한 조건을 부정한다.
+                                {
+                                    if (sibaljum == true) //여기서 나온 정수들은 첫 번째로 나온 것을 +1을 시킨다. 그리고 
+                                    {
+                                        //아마 여기서 i++을 시키면 될듯?
+                                        if (One_sibaljum == true) //첫 번째만 적용
+                                        {
+                                            i++;
+                                            sibaljum2 = true;
+                                        }
+                                        ChoiceOne = true;
+                                        One_sibaljum = false;
+                                        Console.WriteLine(i); //4, 44 가 나온다.
+                                        Console.WriteLine(int.Parse(values[1])); //4, 44가 나온다.
+                                        Stepup = int.Parse(values[1]);
+                                    }
+                                }
+                            }
+                            if (int.Parse(values[1]) == i)//i를 이용해서 순서대로 출력하게 만든다.
+                            {
+
+                                if (Gates == true) //Text 변수에서 문장을 가져왔을 때
+                                {
+                                    //출력했던 문장을 빼내는 문단.
+                                    if (ChoiceOne == true)
+                                    {
+                                        worksheet.Cells[row, 3] = "선택지";
+
+                                    }
+                                    else
+                                    {
+                                        if (values2_Name.Length >= 2)
+                                        {
+                                            variableblock = int.Parse(values[1]);
+                                            worksheet.Cells[row, 3] = values2_Name[1];
+
+                                        }
+                                        else
+                                        {
+                                            worksheet.Cells[row, 3] = "";
+                                            // 배열의 길이가 충분하지 않은 경우 예외 처리
+                                        }
+                                    }
+                                    worksheet.Cells[row, 5] = values2_Text[1];
+                                    row++;
+                                    Gates = false;
+                                }
+
+                            }
+
+                        }
+                        if (line.Contains(Reload)) //구분자가 끝나는 곳이므로 초기화를 하는 곳이다. "---";
+                        {
+                            if (sibaljum == true && ChoiceNumber >= 1 && sibaljum2 == true) // i을 -1한다.
+                            {
+
+                                if (ChoiceNumber == 1)
+                                {
+                                    i--;
+                                    Console.WriteLine(i + "R1");
+                                    //row -= 1;
+                                }
+                                if (ChoiceNumber == 2)
+                                {
+                                    i--;
+                                    Console.WriteLine(i + "R2");
+                                    //row -= 2;
+                                }
+
+                            }
+                            if (ChoiceOne == true && ChoiceNumber >= 1 && (CountRow == 8) && sibaljum_Row == true) // Row를 뺀다
+                            {
+
+                                if (ChoiceNumber == 1)
+                                {
+
+                                    sibaljum3_1 = true;
+                                    CountRow = 0;
+                                    sibaljum_Row = false;
+                                    row -= 1;
+                                    row1 = row;
+                                    Console.WriteLine(row);
+                                }
+                                if (ChoiceNumber == 2)
+                                {
+
+                                    sibaljum3_2 = true;
+                                    CountRow = 0;
+                                    sibaljum_Row = false;
+                                    row -= 2;
+                                    row2 = row;
+                                    Console.WriteLine(row);
+                                }
+                            }
+                            different = 0; //deferent 초기화
+
+                            variableblock = 0;
+
+                            ChoiceNumber = 0;
+                            Stepup = 0;
+                            ChoiceOne = false;
+                            sibaljum = false;
+                            sibaljum2 = false;
+
+                        }
+
+                        /////
+                        if (line.Contains(variable_Title)) //Title 시트 값 저장
+                        {
+                            if (line.Contains("\""))
+                            {
+                                string[] values = line.Split(':');
+
+                                string japaneseString = values[1].Trim(); // Remove leading/trailing whitespac
+                                string decoded = System.Text.RegularExpressions.Regex.Unescape(japaneseString);
+                                values2_Text = decoded.Split('\"');
+                                worksheet2.Cells[2, 3] = values2_Text[1].Trim();
+                            }
+                            else
+                            {
+                                string[] values = line.Split(':');
+                                string japaneseString = values[1].Trim();
+                                worksheet2.Cells[2, 3] = japaneseString.Trim();
+                            }
+
+
+                            //path[6~11] 
+                            worksheet2.Cells[2, 1] = path[6].Trim() + "\\" + path[7].Trim() + "\\" + path[8].Trim() + "\\" + path[9].Trim() + "\\" +
+                                path[10].Trim() + "\\" + path[11].Trim(); //Path 출력
+
+                            //path[12] 
+
+                            worksheet2.Cells[2, 2] = fileName[0].Trim(); //Filename 출력
+
+                            worksheet2.Cells[2, 5] = "title";
+                        }
+
+                    }
+
+                }
+
+
+
+                foreach (string line in lines)  // NextBlock: -1를 찾아서 출력.
+                {
+
+                    if (line.Contains(variable_Name)) // Check if the line contains "Name: "
+                    {
+                        string[] values = line.Split(':');
+                        //Name:
+                        if (values[1] == " ") //"Name:" 이란 변수는 있는데 값이 없을 경우 
+                        {
+                            values2_Name[1] = " ";
+                        }
+                        else
+                        {
+                            string decoded = System.Text.RegularExpressions.Regex.Unescape(values[1]); //이스케이프 시퀀스를 디코딩할 수 있습니다. 
+                            values2_Name = decoded.Split('\"');
+                        }
+                    }
+                    if (line.Contains(variable_Text)) // Check if the line contains "Text: "
+                    {
+
+                        string[] values = line.Split(':');
+                        string japaneseString = values[1].Trim(); // Remove leading/trailing space
+                        string decoded = System.Text.RegularExpressions.Regex.Unescape(japaneseString); //이스케이프 시퀀스를 디코딩할 수 있습니다. 
+                        values2_Text = decoded.Split('\"');
+
+                    }
+                    int i = -1;
+                    if (line.Contains(NextBlock))//NextBlock: "  NextBlock:"  
+                    { //NextBlock을 숫자순으로 차례대로 검사하여 엑셀에 저장
+                        string[] values = line.Split(':');
+                        if (int.Parse(values[1]) == i)
+                        {
+
+
+                            worksheet.Cells[row, 3] = values2_Name[1].Trim();
+                            worksheet.Cells[row, 5] = values2_Text[1];
+
+
+                        }
+
+                    }
+
+
+                }
+
+                if (sibaljum3_1 == true)
+                {
+                    row = row1;
+                    string cell = worksheet.Cells[row, 3].Value;
+                    worksheet.Cells[row, 3].Value = worksheet.Cells[row + 1, 3].Value;
+                    worksheet.Cells[row + 1, 3].Value = cell;
+
+                    cell = worksheet.Cells[row, 5].Value;
+                    worksheet.Cells[row, 5].Value = worksheet.Cells[row + 1, 5].Value;
+                    worksheet.Cells[row + 1, 5].Value = cell;
+                    sibaljum3_1 = false;
+                    Console.WriteLine(row);
+                    Console.WriteLine(worksheet.Cells[row, 3].Value);
+                }
+                if (sibaljum3_2 == true)
+                {
+                    /*
+                    row = row2;
+                    string cell = worksheet.Cells[row, 3].Value;
+                    worksheet.Cells[row, 3].Value = worksheet.Cells[row + 1, 3].Value;
+                    worksheet.Cells[row + 1, 3].Value = cell;
+
+                    cell = worksheet.Cells[row, 5].Value;
+                    worksheet.Cells[row, 5].Value = worksheet.Cells[row + 1, 5].Value;
+                    worksheet.Cells[row + 1, 5].Value = cell;
+                    /*
+                    string cell2 = worksheet.Cells[row, 3].Value;
+                    worksheet.Cells[row, 3].Value = worksheet.Cells[row + 1, 3].Value;
+                    worksheet.Cells[row + 1, 3].Value = cell;
+
+                    cell = worksheet.Cells[row, 5].Value;
+                    worksheet.Cells[row, 5].Value = worksheet.Cells[row + 1, 5].Value;
+                    worksheet.Cells[row + 1, 5].Value = cell;
+
+                    Console.WriteLine(row);
+                    */
+                }
+                //엑셀를 저장하는 경로 설정
+                string savePath = path[0] + "\\" + path[1] + "\\" + path[2] + "\\" + path[3] + "\\" +
+                    path[4] + "\\" + "testFinal\\" + path[6] + "\\" + path[7] + "\\" + path[8] + "\\" + path[9] + "\\"
+                    + path[10] + "\\" + path[11] + "\\" + fileName[0];
+
+                workbook.SaveAs(savePath, AccessMode: Excel.XlSaveAsAccessMode.xlExclusive,
+    ConflictResolution: Excel.XlSaveConflictResolution.xlLocalSessionChanges);
+                workbook.Close();
+                excel.Quit();
+
+                //clean up
+                ReleaseExcelObject(worksheet);
+                ReleaseExcelObject(workbook);
+                ReleaseExcelObject(excel);
+            }
+        }
+        private static void ReleaseExcelObject(object obj) // 엑셀 앱 정리
+        {
+            try
+            {
+                if (obj != null)
+                {
+                    Marshal.ReleaseComObject(obj);
+                    obj = null;
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("오류가 발생하였습니다: " + ex.Message);
+                obj = null;
+                throw ex;
             }
             finally
             {
-                if (workbook != null)
-                {
-                    workbook.Close();
-                }
-                excel.Quit();
-
-                // COM 오브젝트 해제
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(excel);
+                GC.Collect();
             }
+            Console.WriteLine("Excel file created , you can find the file");
         }
     }
-}
 
+}
 
 ```
 
 
-
-
-## 텍스트안에 있는 데이터를 엑셀로 옮기는 코드
-
-텍스트의 데이터들을 엑셀 로 변환시키는 코드
-텍스트 속의 셀의 단위를 ';'지정하여 나누어줍니다.
-* 먼저 테스트로 뽑아낼 파일의 위치를 지정해주세요.
-* File.ReadAllLines 함수 옆에 위치를 지정하는 곳에 넣으면 됩니다.
-
-
-```C#
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using System.Runtime.InteropServices;
-using System.Data.OleDb;
-using System.IO;
-using Excel = Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Interop.Excel;
-using System.Drawing;
-
-
-namespace Excel_makeByText
-{
-    internal class Program
-    {
-        static void Main(string[] args)
-        {
-            
-            Application excel = new Application();// 어플리케이션 선언 
-            Workbook workbook = excel.Workbooks.Add(); // 워크 북 더하기
-            Worksheet worksheet = workbook.Sheets[1]; // 데이터를 넣을 워크 시트 선언 
-            string[] lines = File.ReadAllLines(@"C:\\Users\\SESI\\Downloads\\language.howtoplay.txt"); // 텍스트 파일을 읽을 경로 설정 
-
-            int row = 1;
-            foreach (string line in lines)
-            {
-                string[] values = line.Split(';'); //텍스트 안의 글자들 속에 ';'마다 셀로 나누어줍니다.
-                int column = 1;
-                foreach (string value in values)
-                {
-                    worksheet.Cells[row, column] = value; // 순서대로 글자를 셀에 입력해줍니다.
-                    worksheet.Columns[column].AutoFit(); // 글자의 길이에 따라 셀이 늘어나는 코드
-                    worksheet.Cells[row, column].WrapText = true; //셸이 줄바꿈이 되는 코드
-                    column++;
-                }
-                row++;
-            }
-
-            string savePath = @"C:\Users\SESI\Downloads\Excel_practice\output.xlsx"; //엑셀파일을 저장할 경로를 설정
-            workbook.SaveAs(savePath); // 엑셀 파일저장
-            workbook.Close(); // 워크 북 종료
-            excel.Quit(); // 엑셀 나가기
-        }
-    }
-}
-```
