@@ -37,6 +37,16 @@
 
 ## 준비 작업
 
+1. 먼저 프로젝트를 만들기 전에 Visual Studio Installer에 들어간다.
+2. 워크로드 칸에 '.NET 데스크콥 개발'이라고 써져 있는 칸을 클릭하고 설치해주면, 준비가 끝난다.
+
+
+## 코드 사용 방법
+
+1. 먼저 Visual Studio에서 '새 프로젝트를 만들기'를 클릭해준다. 
+2. 설치를 해줄 프로젝트는 '콘솔 앱(.NET Framework)'(C#) 이니 검색을 하거나 스크롤을 내려서 찾는다.
+3. 이후에 새 창이 나오는데 이 글 밑에 있는 코드를 붙여넣으면 된다.
+
 * 이 코드를 하기 전 Visual Studio 2022에서는 프로젝트->참조 추가->COM->검색에서 'Excel' 타이핑 해주면 Microft Excel 15.0 Object Library가 나오는데 왼쪽 상자를 클릭하여 추가하고 확인을 눌러줘야 합니다.
 그럼 이제 두 개의 네임스페이스를 가져올 수 있는데 
 ```C#
@@ -56,6 +66,7 @@ using Microsoft.Office.Interop.Excel;
  - System.Threading.Tasks: TAP(작업 기반 비동기 패턴)를 사용하여 비동기 코드를 작성하기 위한 형식과 클래스를 제공합니다.
  - System.Runtime.InteropServices: C# 코드에서 DLL 함수를 호출하는 것과 같이 비관리 코드와 상호 작용하기 위한 형식 및 클래스를 제공합니다.
  - System.Data.Common: 공용 ADO.NET 인터페이스를 구현하는 데이터 공급자와 함께 작업하기 위한 형식과 클래스를 제공합니다.
+---------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -87,7 +98,7 @@ namespace Excel_parseer
         {
             Console.OutputEncoding = Encoding.GetEncoding("Shift-JIS");
 
-            string directoryPath = @"C:\Users\SESI\Downloads\homework\source\Bundle\Resources\Story";
+            string directoryPath = @"엑셀로 바꿀 폴더의 ";
 
             // Get all file paths in the directory with the .asset extension
             //string[] excelFilePaths = Directory.GetFiles(directoryPath, "*.asset", SearchOption.AllDirectories);
