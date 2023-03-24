@@ -35,13 +35,13 @@
     2.	데이터를 엑셀로 뽑아내서 저장할 폴더 
 
 
-## 준비 작업
+## 1) 준비 작업
 
 1. 먼저 프로젝트를 만들기 전에 Visual Studio Installer에 들어간다.
 2. 워크로드 칸에 '.NET 데스크콥 개발'이라고 써져 있는 칸을 클릭하고 설치해주면, 준비가 끝난다.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
-## 코드 사용 방법
+## 2) 코드 사용 방법
 
 1. 먼저 Visual Studio에서 '새 프로젝트를 만들기'를 클릭해준다. 
 2. 설치를 해줄 프로젝트는 '콘솔 앱(.NET Framework)'(C#) 이니 검색을 하거나 스크롤을 내려서 찾는다.
@@ -77,13 +77,13 @@ string directoryPath = @"엑셀로 바꿀 폴더의 ";
  - 이렇게 하면 각 에셋 파일이 모두 엑셀 파일로 바뀌어진 광경을 볼 수 있다.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
- ## 네임스페이스
+ ##  3) 네임스페이스
 ```C#
 using Excel = Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Excel;
 ```
 이 두 개는 C# 코드 내에서 Excel 통합 문서, 워크시트, 셀 및 기타 관련 개체에 액세스하고 조작할 수 있습니다.
-먼저 엑셀을 만들기 위해선 이 두 개의 네임스페이스가 필요합니다. 
+먼저 엑셀을 만들기 위해선 이 두 개의 네임스페이스가 중요합니다. 
 
 - 첫 번째 줄은 네임스페이스에 대한 별칭 "Excel"을 만듭니다. 
 이렇게 하면 코드의 다른 네임스페이스 또는 클래스와의 이름 충돌을 방지할 수 있습니다.
@@ -97,12 +97,36 @@ using Microsoft.Office.Interop.Excel;
  - System.Data.Common: 공용 ADO.NET 인터페이스를 구현하는 데이터 공급자와 함께 작업하기 위한 형식과 클래스를 제공합니다.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
+ ##  4) 중요 코드
+ 
+ ### 4.1) 
+```C#
+string[] lines = File.ReadAllLines(excelFilePath);
+ for (int i = 2; i <= count; i++) 
+     {
+     }
+```
+* 이 두 코드는 파일을 가져왔을 때 파일의 텍스트를 싹 다 읽어오고
+* 열이 2번째부터 출력되기 때문에 i를 2로 설정했다.
+
+```C#
+
+```
+
+
+```C#
+
+```
+
+
+```C#
+
+```
 
 
 
 
-
-## 에셋 파일 안의 데이터를 엑셀로 뽑아내는 전체 코드
+## 전체 코드
 
 ```C#
 using System;
@@ -155,8 +179,7 @@ namespace Excel_parseer
                                                          //File.WriteAllText(textFilePath, File.ReadAllText(assetFilePath));
 
                 Directory.CreateDirectory(path[0] + "\\" + path[1] + "\\" + path[2] + "\\" + path[3] + "\\" +
-                    path[4] + "\\" + "testFinal\\" + path[6] + "\\" + path[7] + "\\" + path[8] + "\\" + path[9] + "\\"
-                    + path[10] + "\\" + path[11]); //폴더 생성
+  path[4] + "\\" + path[5]); //폴더 생성
 
                 string[] lines = File.ReadAllLines(excelFilePath); //라인으로 텍스트의 글들을 싹 읽어 온거
 
@@ -586,8 +609,7 @@ namespace Excel_parseer
                 }
                 //엑셀를 저장하는 경로 설정
                 string savePath = path[0] + "\\" + path[1] + "\\" + path[2] + "\\" + path[3] + "\\" +
-                    path[4] + "\\" + "testFinal\\" + path[6] + "\\" + path[7] + "\\" + path[8] + "\\" + path[9] + "\\"
-                    + path[10] + "\\" + path[11] + "\\" + fileName[0];
+                    path[4] + "\\" + path[5] + "\\" + fileName[0];
 
                 workbook.SaveAs(savePath, AccessMode: Excel.XlSaveAsAccessMode.xlExclusive,
     ConflictResolution: Excel.XlSaveConflictResolution.xlLocalSessionChanges);
