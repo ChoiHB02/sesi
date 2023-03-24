@@ -34,7 +34,7 @@
     1.  데이터를 뽑을 에셋 파일이 담긴 폴더
     2.	데이터를 엑셀로 뽑아내서 저장할 폴더 
 
-## 이 코드를 하기 전 Visual Studio 2022에서는 프로젝트->참조 추가->COM->검색에서 'Excel' 타이핑 해주면 Microft Excel 15.0 Object Library가 나오는데 왼쪽 상자를 클릭하여 추가하고 확인을 눌러줘야한다.
+## 이 코드를 하기 전 Visual Studio 2022에서는 프로젝트->참조 추가->COM->검색에서 'Excel' 타이핑 해주면 Microft Excel 15.0 Object Library가 나오는데 왼쪽 상자를 클릭하여 추가하고 확인을 눌러줘야 합니다.
 그럼 이제 두 개의 네임스페이스를 가져올 수 있는데 
 ```C#
 using Excel = Microsoft.Office.Interop.Excel;
@@ -47,24 +47,21 @@ using Microsoft.Office.Interop.Excel;
 이렇게 하면 코드의 다른 네임스페이스 또는 클래스와의 이름 충돌을 방지할 수 있습니다.
 - 두 번째 줄은 C# 코드에서 Excel 작업을 자동화하는 데 사용할 수 있는 모든 클래스, 인터페이스 및 열거형을 포함하는 전체 Excel 개체 모델을 가져옵니다.
 ---------------------------------------------------------------------------------------------------------------------------------------------
-## 
 
 * 나머지 네임 스페이스
  - System.Text: 텍스트를 인코딩, 디코딩 및 조작하기 위한 형식과 클래스를 제공합니다.
  - System.Threading.Tasks: TAP(작업 기반 비동기 패턴)를 사용하여 비동기 코드를 작성하기 위한 형식과 클래스를 제공합니다.
- - OfficeOpenXml: C# 코드를 사용하여 Excel 스프레드시트를 만들고 조작하기 위한 라이브러리를 제공합니다. 이 네임스페이스를 사용하려면 EPPlus 패키지를 설치해야 합니다.
  - System.Runtime.InteropServices: C# 코드에서 DLL 함수를 호출하는 것과 같이 비관리 코드와 상호 작용하기 위한 형식 및 클래스를 제공합니다.
- - System.Data.OleDb: OleDb 데이터 공급자를 사용하여 데이터 소스로 작업하기 위한 형식 및 클래스를 제공합니다.
- - System.Drawing: 그래픽과 이미지 작업을 위한 형식과 클래스를 제공합니다.
- - System.Data: 데이터베이스, 파일 및 웹 서비스와 같은 다양한 소스의 데이터로 작업하기 위한 형식과 클래스를 제공합니다.
- - System.Resources: 문자열, 이미지 및 아이콘과 같은 리소스 작업을 위한 형식과 클래스를 제공합니다.
- - Microsoft.Office.Core: 명령 모음 및 사용자 지정 작업창과 같은 Microsoft Office 응용 프로그램의 핵심 기능을 제공합니다.
  - System.Data.Common: 공용 ADO.NET 인터페이스를 구현하는 데이터 공급자와 함께 작업하기 위한 형식과 클래스를 제공합니다.
- - OfficeOpenXml.ExcelErrorValue: Excel 수식에서 사용할 수 있는 미리 정의된 오류 값 집합을 제공합니다.
- - System.Security.Cryptography: 암호화 알고리즘 및 프로토콜 작업을 위한 형식과 클래스를 제공합니다.
- - System.Runtime.CompilerServices: 사용자 지정 특성 및 확장 메서드와 같은 컴파일러 서비스를 구현하기 위한 형식과 클래스를 제공합니다.
- - System.Security.AccessControl: 보안 권한 및 ACL(액세스 제어 목록) 작업을 위한 형식과 클래스를 제공합니다.
- - System.Security.Principal: 사용자 및 그룹과 같은 보안 주체로 작업하기 위한 형식 및 클래스를 제공합니다.
+
+
+<aside>
+⚠️ 원래라면 엑셀에 있는 NUGET 패키지를 다운받아서 NUGET 패키지의 안에 있는 EPPLUS를 다운받어서 OfficeOpenXml 네임스페이스를 사용하여 라이브러리와
+  스프레드시트를 만들려고 했다.
+  하지만 다 만들고 
+OfficeOpenXml: C# 코드를 사용하여 Excel 스프레드시트를 만들고 조작하기 위한 라이브러리를 제공합니다. 이 네임스페이스를 사용하려면 EPPlus 패키지를 설치해야 합니다.
+</aside>
+
 
 
 
@@ -155,6 +152,8 @@ namespace Excel_parseer
                 string DifferenceType2 = "    DifferenceType:";
                 string DifferenceType3 = "  - Text: \""; //초이스 항목 중에 텍스트를 이용한 조건            //  DifferenceType: 1
                 string Reload = "---";
+                string Row1Array = null;
+                string Row2Array = null;
                 //DifferenceFlag: 2 둘의 옵션을 가지고 있는 오브젝트는   NextBlock:3 -> ChoiceList[] 1.NextBlock:4 2.NextBlock:4 
                 //단 주인 오브젝트만 해당됨
 
@@ -401,8 +400,8 @@ namespace Excel_parseer
                                     CountRow = 0;
                                     sibaljum_Row = false;
                                     row -= 1;
+                                    Row1Array += row + ".";
                                     row1 = row;
-                                    Console.WriteLine(row);
                                 }
                                 if (ChoiceNumber == 2)
                                 {
@@ -411,8 +410,8 @@ namespace Excel_parseer
                                     CountRow = 0;
                                     sibaljum_Row = false;
                                     row -= 2;
+                                    Row2Array += row + ".";
                                     row2 = row;
-                                    Console.WriteLine(row);
                                 }
                             }
                             different = 0; //deferent 초기화
@@ -508,43 +507,63 @@ namespace Excel_parseer
 
 
                 }
-
+                string[] arr = null;
                 if (sibaljum3_1 == true)
                 {
-                    row = row1;
-                    string cell = worksheet.Cells[row, 3].Value;
-                    worksheet.Cells[row, 3].Value = worksheet.Cells[row + 1, 3].Value;
-                    worksheet.Cells[row + 1, 3].Value = cell;
-
-                    cell = worksheet.Cells[row, 5].Value;
-                    worksheet.Cells[row, 5].Value = worksheet.Cells[row + 1, 5].Value;
-                    worksheet.Cells[row + 1, 5].Value = cell;
-                    sibaljum3_1 = false;
-                    Console.WriteLine(row);
-                    Console.WriteLine(worksheet.Cells[row, 3].Value);
+                     arr = Row1Array.Split('.');
                 }
+      
+                Console.WriteLine(Row1Array);
+                string cell;
+                if (sibaljum3_1 == true)
+                {
+                    for (int y = 0; y < arr.Length - 2; y++)
+                    {
+                        cell = worksheet.Cells[int.Parse(arr[y]), 3].Value;
+                        worksheet.Cells[int.Parse(arr[y]), 3].Value = worksheet.Cells[int.Parse(arr[y]) + 1, 3].Value;
+                        worksheet.Cells[int.Parse(arr[y]) + 1, 3].Value = cell;
+
+                        cell = worksheet.Cells[int.Parse(arr[y]), 5].Value;
+                        worksheet.Cells[int.Parse(arr[y]), 5].Value = worksheet.Cells[int.Parse(arr[y]) + 1, 5].Value;
+                        worksheet.Cells[int.Parse(arr[y]) + 1, 5].Value = cell;
+                        // sibaljum3_1 = false;
+                        Console.WriteLine(arr[y]);
+
+                    }
+
+                }
+                string[] arr1 = null;
+                if (sibaljum3_1 == true)
+                {
+                    arr1 = Row2Array.Split('.');
+                }
+               
+
+                Console.WriteLine(Row2Array);
                 if (sibaljum3_2 == true)
                 {
-                    /*
-                    row = row2;
-                    string cell = worksheet.Cells[row, 3].Value;
-                    worksheet.Cells[row, 3].Value = worksheet.Cells[row + 1, 3].Value;
-                    worksheet.Cells[row + 1, 3].Value = cell;
+                    for (int y = 0; y < arr1.Length - 2; y++)
+                    {
+                        // Swap values in column 3
+                        Console.WriteLine(int.Parse(arr1[y]));
+                        cell = worksheet.Cells[int.Parse(arr1[y]), 3].Value;
+                        worksheet.Cells[int.Parse(arr1[y]), 3].Value = worksheet.Cells[int.Parse(arr1[y]) + 1, 3].Value;
+                        worksheet.Cells[int.Parse(arr1[y]) + 1, 3].Value = cell;
+                        cell = worksheet.Cells[int.Parse(arr1[y] + 1), 3].Value;
+                        worksheet.Cells[int.Parse(arr1[y]) + 1, 3].Value = worksheet.Cells[int.Parse(arr1[y]) + 2, 3].Value;
+                        worksheet.Cells[int.Parse(arr1[y]) + 2, 3].Value = cell;
 
-                    cell = worksheet.Cells[row, 5].Value;
-                    worksheet.Cells[row, 5].Value = worksheet.Cells[row + 1, 5].Value;
-                    worksheet.Cells[row + 1, 5].Value = cell;
-                    /*
-                    string cell2 = worksheet.Cells[row, 3].Value;
-                    worksheet.Cells[row, 3].Value = worksheet.Cells[row + 1, 3].Value;
-                    worksheet.Cells[row + 1, 3].Value = cell;
+                        // Swap values in column 5
+                        cell = worksheet.Cells[int.Parse(arr1[y]), 5].Value;
+                        worksheet.Cells[int.Parse(arr1[y]), 5].Value = worksheet.Cells[int.Parse(arr1[y]) + 1, 5].Value;
+                        worksheet.Cells[int.Parse(arr1[y]) + 1, 5].Value = cell;
+                        cell = worksheet.Cells[int.Parse(arr1[y] + 1), 5].Value;
+                        worksheet.Cells[int.Parse(arr1[y]) + 1, 5].Value = worksheet.Cells[int.Parse(arr1[y]) + 2, 5].Value;
+                        worksheet.Cells[int.Parse(arr1[y]) + 2, 5].Value = cell;
+                        sibaljum3_1 = false;
 
-                    cell = worksheet.Cells[row, 5].Value;
-                    worksheet.Cells[row, 5].Value = worksheet.Cells[row + 1, 5].Value;
-                    worksheet.Cells[row + 1, 5].Value = cell;
+                    }
 
-                    Console.WriteLine(row);
-                    */
                 }
                 //엑셀를 저장하는 경로 설정
                 string savePath = path[0] + "\\" + path[1] + "\\" + path[2] + "\\" + path[3] + "\\" +
@@ -586,6 +605,7 @@ namespace Excel_parseer
     }
 
 }
+
 
 ```
 
