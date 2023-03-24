@@ -50,14 +50,14 @@
 5. 마지막으로 에셋파일이 들어있는 폴더의 경로를 찾고 경로의 길이를 재야한다.
 
  - 경로를 찾았다면 세 개의 변수를 바꿔줘야한다.
- # 첫 번째 
+ ### 첫 번째 
  ```C#
 string directoryPath = @"엑셀로 바꿀 폴더의 ";
 ```
  - 이 변수는 엑셀로 바꿀 폴더의 경로를 정해줘야한다.
  - 그렇기에 폴더로 가서 경로를 복사해주고 쌍따옴표 안에 붙여넣기를 한다.
 
- # 두 번째 
+ ### 두 번째 
 ```C#
  Directory.CreateDirectory(path[0] + "\\" + path[1] + "\\" + path[2] + "\\" + path[3] + "\\" +
   path[4] + "\\" + path[5]);
@@ -67,7 +67,7 @@ string directoryPath = @"엑셀로 바꿀 폴더의 ";
  - 예를 들어보자면 C:\Users\SESI\Downloads\homework\testFinal 에 파일이 담겨 있는 폴더들이 있으면 
  - C:이 path[0]이고 User가 path[1], SEST가 path[2]. 이런 식으로 길이에 따라 넣으면 되니 이건 path[5]까지 넣으면 될 것 같다.
 
- # 세 번째 
+ ### 세 번째 
 ```C#
  string savePath = path[0] + "\\" + path[1] + "\\" + path[2] + "\\" + path[3] + "\\" +
   path[4] + "\\" + path[5] + "\\" + fileName[0];
