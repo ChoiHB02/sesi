@@ -48,8 +48,7 @@
 3. 이후에 새 창이 나오는데 이 글 밑에 있는 코드를 붙여넣으면 된다.
 4. 이 코드를 하기 전 Visual Studio 2022에서는 프로젝트->참조 추가->COM->검색에서 'Excel' 타이핑 해주면 Microft Excel 15.0 Object Library가 나오는데 왼쪽 상자를 클릭하여 추가하고 확인을 눌러줘야 합니다.
 5. 마지막으로 에셋파일이 들어있는 폴더의 경로를 찾고 경로의 길이를 재야한다.
-
- - 경로를 찾았다면 세 개의 변수를 바꿔줘야한다.
+6. 경로를 찾았다면 세 개의 변수를 바꿔줘야한다.
  ### 첫 번째 
  ```C#
 string directoryPath = @"엑셀로 바꿀 폴더의 ";
@@ -77,7 +76,7 @@ string directoryPath = @"엑셀로 바꿀 폴더의 ";
  - 이렇게 하면 각 에셋 파일이 모두 엑셀 파일로 바뀌어진 광경을 볼 수 있다.
 
 
-그럼 이제 두 개의 네임스페이스를 가져올 수 있는데 
+ ## 네임스페이스
 ```C#
 using Excel = Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Excel;
