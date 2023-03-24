@@ -109,16 +109,21 @@ string[] lines = File.ReadAllLines(excelFilePath);
 * 이 두 코드는 파일을 가져왔을 때 파일의 텍스트를 싹 다 읽어오고
 * 열이 2번째부터 출력되기 때문에 i를 2로 설정했다.
 
+ ### 4.2) 
+```C#
+if (line.Contains(variable))
+    {
+    }
+```
+* 이 함수를 통해 텍스트에서 줄마다 string 변수 variable이 정의된 값이 포함된 줄을 읽어온다.
+
+ ### 4.1) 
 ```C#
 
 ```
 
 
-```C#
-
-```
-
-
+ ### 4.1) 
 ```C#
 
 ```
