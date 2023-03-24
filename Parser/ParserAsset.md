@@ -34,7 +34,10 @@
     1.  데이터를 뽑을 에셋 파일이 담긴 폴더
     2.	데이터를 엑셀로 뽑아내서 저장할 폴더 
 
-## 이 코드를 하기 전 Visual Studio 2022에서는 프로젝트->참조 추가->COM->검색에서 'Excel' 타이핑 해주면 Microft Excel 15.0 Object Library가 나오는데 왼쪽 상자를 클릭하여 추가하고 확인을 눌러줘야 합니다.
+
+## 준비 작업
+
+* 이 코드를 하기 전 Visual Studio 2022에서는 프로젝트->참조 추가->COM->검색에서 'Excel' 타이핑 해주면 Microft Excel 15.0 Object Library가 나오는데 왼쪽 상자를 클릭하여 추가하고 확인을 눌러줘야 합니다.
 그럼 이제 두 개의 네임스페이스를 가져올 수 있는데 
 ```C#
 using Excel = Microsoft.Office.Interop.Excel;
@@ -55,15 +58,11 @@ using Microsoft.Office.Interop.Excel;
  - System.Data.Common: 공용 ADO.NET 인터페이스를 구현하는 데이터 공급자와 함께 작업하기 위한 형식과 클래스를 제공합니다.
 
 
-## 엑셀 안의 데이터를 텍스트화 시키는 코드
-
-엑셀의 데이터들을 텍스트로 변환시키는 코드
 
 
 
 
-
-
+## 에셋 파일 안의 데이터를 엑셀로 뽑아내는 전체 코드
 
 ```C#
 using System;
@@ -72,22 +71,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OfficeOpenXml;  //EPPlus를 설치
 
 using System.Runtime.InteropServices;
-using System.Data.OleDb;
 using Excel = Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Excel;
-using System.Drawing;
 using System.Data;
-using System.Resources;
-using Microsoft.Office.Core;
-using System.Data.Common;
-using static OfficeOpenXml.ExcelErrorValue;
-using System.Security.Cryptography;
-using System.Runtime.CompilerServices;
-using System.Security.AccessControl;
-using System.Security.Principal;
 
 
 
