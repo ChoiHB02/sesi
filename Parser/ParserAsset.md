@@ -55,24 +55,15 @@ using Microsoft.Office.Interop.Excel;
  - System.Data.Common: 공용 ADO.NET 인터페이스를 구현하는 데이터 공급자와 함께 작업하기 위한 형식과 클래스를 제공합니다.
 
 
-<aside>
-⚠️ 원래라면 엑셀에 있는 NUGET 패키지를 다운받아서 NUGET 패키지의 안에 있는 EPPLUS를 다운받어서 OfficeOpenXml 네임스페이스를 사용하여 라이브러리와
-  스프레드시트를 만들려고 했다.
-  하지만 다 만들고 
-OfficeOpenXml: C# 코드를 사용하여 Excel 스프레드시트를 만들고 조작하기 위한 라이브러리를 제공합니다. 이 네임스페이스를 사용하려면 EPPlus 패키지를 설치해야 합니다.
-</aside>
-
-
-
-
-
-
 ## 엑셀 안의 데이터를 텍스트화 시키는 코드
 
 엑셀의 데이터들을 텍스트로 변환시키는 코드
-분리된 셀의 정의를 ';'로 지정하여 가로줄의 텍스트를 뽑아냅니다.  
-* 먼저 테스트로 뽑아낼 파일의 위치를 지정해주세요.
-* 뽑아낼 엑셀은 excelFilePath, 생성하거나 붙여넣을 파일은 textFilePath에 넣으면 됩니다.
+
+
+
+
+
+
 
 ```C#
 using System;
@@ -533,7 +524,7 @@ namespace Excel_parseer
 
                 }
                 string[] arr1 = null;
-                if (sibaljum3_1 == true)
+                if (sibaljum3_2 == true)
                 {
                     arr1 = Row2Array.Split('.');
                 }
