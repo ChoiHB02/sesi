@@ -91,9 +91,39 @@
 
 [사진 GameService7]<br>
 
+유저키와 CMD로 SHA-1 인증서를 뽑아내야하기 때문에 방법은 아래의 링크를 따라한다.
+https://cafe.naver.com/sesisoftdev/25 
+
 만약 파이어베이스와 동시에 사용하고 싶다면,
 파이어베이스(https://firebase.google.com/?hl=ko&authuser=0)는 SHA-256 인증서 코드로 바꿔주고 클라우드는 SHA-1 인증서 코드를 사용하면 된다.
-자세한건 https://cafe.naver.com/sesisoftdev/25 와 https://cafe.naver.com/sesisoftdev/26 를 살펴보도록 하자.
+자세한건 https://cafe.naver.com/sesisoftdev/26 를 살펴보도록 하자.
+
+[사진 GameService8]<br>
+
+이제 구글 플레이 콘솔에 들어가서 OAuth 클라이언트 새로고침을 한다면 아까 만들었던 클라이언트의 이름이 뜨게 될 겁니다. 
+그럼 업적과 리더보드, 이벤트를 만들 준비가 되었습니다.
+
+
+[사진 GameService9]<br>
+
+이렇게 업적과 리더보드, 이벤트를 각각 만들어줬으면 
+
+
+[사진 GameService10]<br>
+
+업적, 이벤트, 리더보드, 설정 창들 중 어디든 리소스 보기가 있고 다 똑같으니 리소스 보기를 눌러서 
+코드를 복사해준다.
+
+[사진 GameService11]<br>
+
+그런 다음 위의 사진에 있는 경로에 따라서 Android Setup에 들어가 주게 되면 
+
+[사진 GameService11]<br>
+
+위에 같은 하나 창이 뜨게 되는데 순서대로 1은 아까 복사한 리소스 코드를 붙여넣고 2는 아까 만들었던 OAuth 클라이언트에서 클라이언트 ID를 갖고 온다.
+물론 Google play console이나 Google Cloud에 똑같은게 있으니 둘 중 하나를 찾아서 붙이기를 하고 마지막으로 Setup 버튼을 누르면 GPGSIds라는 스크립트가 생기게 된다.
+
+
 
 ===========================================================================================================
 
