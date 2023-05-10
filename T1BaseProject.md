@@ -20,6 +20,10 @@
 --- 
 
 
+소스트리
+'git clone https://sesiprojectoregon@bitbucket.org/projectoregon/mytestbase.git'
+
+
 # 목차
 
 1. 광고 메디에이션(ADS Scene) <br>
@@ -28,6 +32,7 @@
 4. 구글 시트 파싱 (Parsing Scene) <br>
 5. 구글 클라우드 JSON 세이브로드 (SaveLoad Scene) <br>
 6. 오류 정리 <br>
+
 
 
 <br><br><br>
@@ -85,55 +90,59 @@
 
 [사진 GameService6]<br>
 
-구글 플레이 콘솔에서 요구하는 것은 OAuth 클라이언트였다 그러니 OAuth 클라이언트 ID를 만들어준다.
-애플리케이션 유형은 'Android'로 설정하고 패키지 이름과 SHA-1 인증서 디지털 지문을 해줘야하는데
+구글 플레이 콘솔에서 요구하는 것은 OAuth 클라이언트였다 그러니 OAuth 클라이언트 ID를 만들어준다.<br>
+애플리케이션 유형은 'Android'로 설정하고 패키지 이름과 SHA-1 인증서 디지털 지문을 해줘야하는데<br>
 
 
 [사진 GameService7]<br>
 
-유저키와 CMD로 SHA-1 인증서를 뽑아내야하기 때문에 방법은 아래의 링크를 따라한다.
-https://cafe.naver.com/sesisoftdev/25 
+유저키와 CMD로 SHA-1 인증서를 뽑아내야하기 때문에 방법은 아래의 링크를 따라한다.<br>
+https://cafe.naver.com/sesisoftdev/25 <br>
 
-만약 파이어베이스와 동시에 사용하고 싶다면,
-파이어베이스(https://firebase.google.com/?hl=ko&authuser=0)는 SHA-256 인증서 코드로 바꿔주고 클라우드는 SHA-1 인증서 코드를 사용하면 된다.
-자세한건 https://cafe.naver.com/sesisoftdev/26 를 살펴보도록 하자.
+만약 파이어베이스와 동시에 사용하고 싶다면,<br>
+파이어베이스(https://firebase.google.com/?hl=ko&authuser=0)는 SHA-256 인증서 코드로 바꿔주고 클라우드는 SHA-1 인증서 코드를 사용하면 된다.<br>
+자세한건 https://cafe.naver.com/sesisoftdev/26 를 살펴보도록 하자.<br>
 
 [사진 GameService8]<br>
 
-이제 구글 플레이 콘솔에 들어가서 OAuth 클라이언트 새로고침을 한다면 아까 만들었던 클라이언트의 이름이 뜨게 될 겁니다. 
-그럼 업적과 리더보드, 이벤트를 만들 준비가 되었습니다.
+이제 구글 플레이 콘솔에 들어가서 OAuth 클라이언트 새로고침을 한다면 아까 만들었던 클라이언트의 이름이 뜨게 될 겁니다. <br>
+그럼 업적과 리더보드, 이벤트를 만들 준비가 되었습니다.<br>
 
 
 [사진 GameService9]<br>
 
-이렇게 업적과 리더보드, 이벤트를 각각 만들어줬으면 
+이렇게 업적과 리더보드, 이벤트를 각각 만들어줬으면<br>
 
 
 [사진 GameService10]<br>
 
-업적, 이벤트, 리더보드, 설정 창들 중 어디든 리소스 보기가 있고 다 똑같으니 리소스 보기를 눌러서 
+업적, 이벤트, 리더보드, 설정 창들 중 어디든 리소스 보기가 있고 다 똑같으니 리소스 보기를 눌러서 <br>
 코드를 복사해준다.
 
 [사진 GameService11]<br>
 
-그런 다음 위의 사진에 있는 경로에 따라서 Android Setup에 들어가 주게 되면 
+그런 다음 위의 사진에 있는 경로에 따라서 Android Setup에 들어가 주게 되면 <br>
 
 [사진 GameService11]<br>
 
-위에 같은 하나 창이 뜨게 되는데 순서대로 1은 아까 복사한 리소스 코드를 붙여넣고 2는 아까 만들었던 OAuth 클라이언트에서 클라이언트 ID를 갖고 온다.
-물론 Google play console이나 Google Cloud에 똑같은게 있으니 둘 중 하나를 찾아서 붙이기를 하고 마지막으로 Setup 버튼을 누르면 GPGSIds라는 스크립트가 생기게 된다.
+위에 같은 하나 창이 뜨게 되는데 순서대로 1은 아까 복사한 리소스 코드를 붙여넣고 2는 아까 만들었던 OAuth 클라이언트에서 클라이언트 ID를 갖고 온다.<br>
+물론 Google play console이나 Google Cloud에 똑같은게 있으니 둘 중 하나를 찾아서 붙이기를 하고 마지막으로 Setup 버튼을 누르면 GPGSIds라는 스크립트가 생기게 된다.<br>
 
-
+이것을 기반으로 코드를 수정하거나 추가하면 된다.<br>
 
 ===========================================================================================================
 
 
 # 3 파이어베이스 로그인 및 푸시, 결제(Login Scene)<br>
 
-[사진]
-Login Scene이 먼저 시작을 했을 때 사진이다.
+현재 이 씬에서는 게스트 로그인, 구글 로그인, 인앱 결제, 로그인 토큰 저장의 기능이 들어있다.
+지금은 google-services 파일이 작성자의 것으로 되어 있기 때문에 
+자신의 유저키를 바꾸고 파이어베이스 사이트에서 유저키의 SHA-1을 넣어서 새로운 google-services 파일을 넣어야
+바뀔 것이다.
 
-먼저 게스트 로그인을 해야 
+그 부분은 [파이어베이스 깃허브](https://github.com/SesisoftTFT/Schedule/blob/main/FireBase%20%EA%B8%B0%EB%8A%A5%EC%9D%B8%20Auth,%20Message%20SDK%EB%A5%BC%20%EC%B6%94%EA%B0%80%ED%95%98%EC%97%AC%20%ED%99%9C%EC%84%B1%ED%99%94.md) 를 참고하도록 하자
+
+
 
 # 4 구글 시트 파싱 (Parsing Scene)<br>
 
